@@ -1,0 +1,231 @@
+{
+  "name": "CareerMatch AI - Resume Analysis",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "analyze-resume",
+        "options": {
+          "binaryPropertyName": "resume"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        0
+      ],
+      "id": "4b8138cd-64c4-457d-9b1a-369dbe1b1f4d",
+      "name": "Webhook",
+      "webhookId": "8c483013-7ae3-497e-ba56-51063f5e80f1"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "resume0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -192,
+        0
+      ],
+      "id": "561d2e1a-66ca-481f-b48a-60ee0a888ee8",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={\n  \"matching_skills\": [],\n  \"missing_skills\": [],\n  \"ats_keywords\": [],\n  \"experience_match\": \"\",\n  \"qualification_match\": \"\",\n  \"recommendations\": [],\n  \"interview_questions\": [],\n  \"skills_match_percentage\": 0,\n  \"keywords_match_percentage\": 0,\n  \"experience_match_percentage\": 0,\n  \"qualification_match_percentage\": 0,\n  \"resume_structure_percentage\": 0\n}\n\nScoring instructions:\n\n1. skills_match_percentage:\nCompare the skills explicitly required by the job description with the skills demonstrated in the resume.\nReturn a number from 0 to 100.\n\n2. keywords_match_percentage:\nCompare important technical and role-related keywords from the job description with the resume.\nReturn a number from 0 to 100.\n\n3. experience_match_percentage:\nCompare the experience demonstrated in the resume with the experience or responsibilities required by the job description.\nReturn a number from 0 to 100.\nDo not assume professional experience that is not stated. Projects can demonstrate technical experience but must not be presented as employment experience.\n\n4. qualification_match_percentage:\nCompare the candidate's stated education and qualifications with the requirements in the job description.\nReturn a number from 0 to 100.\nIf the job description does not specify educational requirements, use 100 when there is no qualification conflict.\n\n5. resume_structure_percentage:\nEvaluate the resume's ATS-friendliness based only on its structure and formatting.\nConsider:\n- clear section headings\n- readable organization\n- standard resume sections\n- consistent formatting\n- ATS-friendly layout\n- absence of unnecessary graphics or complex formatting\nReturn a number from 0 to 100.\n\nRules:\n- matching_skills: skills required by the job that are demonstrated in the resume.\n- missing_skills: important job requirements not demonstrated in the resume.\n- ats_keywords: important keywords from the job description that are present in the resume or would be relevant to the role.\n- experience_match: factual comparison of demonstrated experience with the job requirements.\n- qualification_match: factual comparison of education/qualifications with the job requirements.\n- recommendations: specific improvements to improve the resume's match.\n- interview_questions: exactly 5 relevant interview questions.\n- Base the analysis only on the supplied resume and job description.\n- Do not invent experience, skills, qualifications, or achievements.\n- All percentage values must be numbers, not strings.\n- Percentages must be between 0 and 100.\n\nCandidate Resume:\n{{ $json.text }}\n\nJob Title:\n{{ $('Webhook').item.json.body.jobTitle }}\n\nJob Description:\n{{ $('Webhook').item.json.body.jobDescription }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f27d5fc8-b87c-4a78-86f0-e960f7a42876",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        560,
+        336
+      ],
+      "id": "e822687a-aac3-491d-b6b0-f1dff831d880",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "REDACTED",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd8fc026-62c0-4f81-853d-ed789965d440",
+              "name": "=match_score",
+              "value": "={{ Math.round(\r\n  (JSON.parse($json.text).skills_match_percentage * 0.40) +\r\n  (JSON.parse($json.text).keywords_match_percentage * 0.25) +\r\n  (JSON.parse($json.text).experience_match_percentage * 0.15) +\r\n  (JSON.parse($json.text).qualification_match_percentage * 0.10) +\r\n  (JSON.parse($json.text).resume_structure_percentage * 0.10)\r\n) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        288,
+        0
+      ],
+      "id": "cd729842-99b9-4e28-a339-86da4ee22019",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "tableId": "analyses",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "resume_name",
+              "fieldValue": "={{ $('Webhook').item.binary.resume0.fileName }}"
+            },
+            {
+              "fieldId": "job_title",
+              "fieldValue": "={{ $('Webhook').item.json.body.jobTitle }}"
+            },
+            {
+              "fieldId": "job_description",
+              "fieldValue": "={{ $('Webhook').item.json.body.jobDescription }}"
+            },
+            {
+              "fieldId": "resume_text",
+              "fieldValue": "={{ $('Extract from File').item.json.text }}"
+            },
+            {
+              "fieldId": "match_score",
+              "fieldValue": "={{ $json.match_score }}"
+            },
+            {
+              "fieldId": "matching_skills",
+              "fieldValue": "={{ JSON.parse($json.text).matching_skills }}"
+            },
+            {
+              "fieldId": "missing_skills",
+              "fieldValue": "={{ JSON.parse($json.text).missing_skills }}"
+            },
+            {
+              "fieldId": "keywords",
+              "fieldValue": "={{ JSON.parse($json.text).ats_keywords }}"
+            },
+            {
+              "fieldId": "recommendations",
+              "fieldValue": "={{ JSON.parse($json.text).recommendations }}"
+            },
+            {
+              "fieldId": "interview_questions",
+              "fieldValue": "={{ JSON.parse($json.text).interview_questions }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        480,
+        32
+      ],
+      "id": "ca31396d-a7ca-4627-af79-f1f2c86bb645",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "REDACTED",
+          "name": "Supabase account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "db9ebeae-7a93-4987-b55f-66b35a28f716",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "REDACTED"
+  },
+  "nodeGroups": [],
+  "id": "6gyaFcyQVLNEAYUw",
+  "tags": []
+}
