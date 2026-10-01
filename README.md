@@ -52,6 +52,10 @@ Resume PDF + Job Details
     Supabase Database
 ```
 
+### Workflow Screenshot
+
+![CareerMatch AI n8n Workflow](screenshots/workflow.png)
+
 ## 🧠 AI Analysis
 
 The AI evaluates the resume against the provided job description and generates:
