@@ -71,6 +71,16 @@ The AI evaluates the resume against the provided job description and generates:
 
 The system is instructed to base its analysis only on information present in the resume and job description rather than inventing candidate skills or experience.
 
+### Analysis Results
+
+#### Match Overview
+
+![CareerMatch AI Match Overview](screenshots/analysis-result-1.png)
+
+#### Detailed AI Analysis
+
+![CareerMatch AI Detailed Analysis](screenshots/analysis-result-2.png)
+
 ## 📊 Match Score
 
 The overall match score is calculated using weighted components:
@@ -173,6 +183,9 @@ career-match-ai/
 │   └── career-match-ai-workflow.json
 │
 ├── screenshots/
+│   ├── workflow.png
+│   ├── analysis-result-1.png
+│   └── analysis-result-2.png
 │
 ├── .gitignore
 └── README.md
@@ -232,5 +245,5 @@ AI-generated recommendations and interview questions should also be reviewed by 
 
 **Ankit Mangaraj**
 
-* GitHub: https://github.com/ankitmangaraj
-* LinkedIn: https://www.linkedin.com/in/ankitmangaraj/
+* GitHub: [ankitmangaraj](https://github.com/ankitmangaraj)
+* LinkedIn: [Ankit Mangaraj](https://www.linkedin.com/in/ankitmangaraj/)
