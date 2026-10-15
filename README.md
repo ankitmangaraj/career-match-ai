@@ -25,6 +25,13 @@ It analyzes a candidate's resume against a given job description and generates a
 * 💾 Analysis results stored in Supabase
 * 🔄 Automated workflow using n8n
 
+### Known Limitations
+
+- **Detailed Analysis Report:** The detailed report page is currently limited by Softr's plan restrictions on Supabase data-source blocks. The Analysis History page can display saved analyses, but opening an individual analysis report may not work as expected on the current free plan.
+- **Planned Improvement:** Replace the restricted block with a compatible REST API-based implementation or upgrade the Softr plan to enable the required functionality.
+
+**Note:** Resume submission, AI analysis, and saving analysis history to Supabase are working.
+
 ## 🛠️ Tech Stack
 
 * **Workflow Automation:** n8n
