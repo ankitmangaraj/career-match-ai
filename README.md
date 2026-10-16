@@ -25,6 +25,17 @@ It analyzes a candidate's resume against a given job description and generates a
 * 💾 Analysis results stored in Supabase
 * 🔄 Automated workflow using n8n
 
+### Deployment Status
+
+CareerMatch AI is a portfolio prototype built to demonstrate AI-powered resume analysis and no-code workflow automation.
+
+- **Frontend:** Published using Softr.
+- **Workflow automation:** n8n.
+- **AI analysis:** LLM-based resume and job-description matching.
+- **Database:** Supabase.
+- **Current limitation:** The n8n workflow currently depends on a locally hosted instance and an active tunnel. Live analysis may be unavailable when the local service is offline.
+- **Future improvement:** Deploy the workflow to persistent cloud hosting for improved availability.
+
 ### Known Limitations
 
 - **Detailed Analysis Report:** The detailed report page is currently limited by Softr's plan restrictions on Supabase data-source blocks. The Analysis History page can display saved analyses, but opening an individual analysis report may not work as expected on the current free plan.
