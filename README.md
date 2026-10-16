@@ -32,6 +32,15 @@ It analyzes a candidate's resume against a given job description and generates a
 
 **Note:** Resume submission, AI analysis, and saving analysis history to Supabase are working.
 
+### Deployment and Availability
+
+- **Frontend:** The Softr application is published online.
+- **Backend:** n8n currently runs locally on the developer's computer using Docker.
+- **Connectivity:** Cloudflare Quick Tunnel exposes the local n8n webhooks to the internet.
+- **Current limitation:** Resume submissions and AI analysis require the local n8n instance, internet connectivity, and an active tunnel. If the computer or tunnel becomes unavailable, these features may fail until connectivity is restored.
+- **Database:** Analysis results are stored in Supabase and previously saved records may remain accessible while the backend is offline.
+- **Planned improvement:** Deploy n8n to a persistent cloud-hosted environment to improve availability and remove the dependency on the developer's computer and temporary tunnel.
+
 ## 🛠️ Tech Stack
 
 * **Workflow Automation:** n8n
